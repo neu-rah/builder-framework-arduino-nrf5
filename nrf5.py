@@ -1,4 +1,4 @@
-# Copyright 2014-present PlatformIO <contact@platformio.org>
+a# Copyright 2014-present PlatformIO <contact@platformio.org>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ from os import listdir
 from os.path import isdir, join
 
 from SCons.Script import DefaultEnvironment
+
+print("r-site.net changed nRF5 pio script!")
+print("===================================")
 
 env = DefaultEnvironment()
 platform = env.PioPlatform()
@@ -59,6 +62,8 @@ env.Append(
         ("F_CPU", "16000000L"),
         "ARDUINO_ARCH_NRF5",
         "NRF5",
+        # ("DM_GATT_CCCD_COUNT",4),
+        ("IS_SRVC_CHANGED_CHARACT_PRESENT",1),
         "%s" % board.get("build.mcu", "")[0:5].upper()
     ],
 
@@ -69,14 +74,88 @@ env.Append(
 
     CPPPATH=[
         join(FRAMEWORK_DIR, "cores", board.get("build.core")),
+
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "external", "rtx", "include"),
+
+        # DONT USE THIS FROM EXAMPLES.. LET USER DO ITS OWN BSP, ITS SIMPLER
+        # join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+        #      "SDK", "examples", "bsp"),
+
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "softdevice", "common", "softdevice_handler"),
+
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "crc16"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "util"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "bootloader_dfu"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "bootloader_dfu","ble_transport"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "bootloader_dfu","hci_transport"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "scheduler"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "timer"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "trace"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "hci"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "uart"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "fifo"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "sensorsim"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "button"),
+
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","common"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","device_manager"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","device_manager","config"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_services","ble_dfu"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_services","ble_bas"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_services","ble_hrs"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_services","ble_dis"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_advertising"),
+
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "drivers_nrf", "delay"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "gpiote"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "pstorage"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "pstorage", "config"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "ble_flash"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "hal"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "uart"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "config"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "common"),
+
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "device"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "toolchain"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
-             "SDK", "components", "toolchain", "CMSIS", "Include")
+             "SDK", "components", "toolchain", "CMSIS", "Include"),
+
+        join(FRAMEWORK_DIR, "variants", board.get("build.variant"))
     ],
 
     LINKFLAGS=[
@@ -106,17 +185,10 @@ if "BOARD" in env:
         ]
     )
 
-if board.get("build.cpu") == "cortex-m4":
-    env.Append(
-        CCFLAGS=[
-            "-mfloat-abi=softfp",
-            "-mfpu=fpv4-sp-d16"
-        ]
-    )
-
 env.Append(
-    ASFLAGS=env.get("CCFLAGS", [])[:]
-)
+    CCFLAGS=[
+        "-mcpu=%s" % env.BoardConfig().get("build.cpu")
+    ])
 
 # Process softdevice options
 softdevice_ver = None
@@ -128,31 +200,38 @@ elif "NRF51_S130" in cpp_defines:
 elif "NRF51_S110" in cpp_defines:
     softdevice_ver = "s110"
 
+print("checking softdevice...");
 if softdevice_ver:
+
+    dfu=""
+    # dfu=("_ble_dfu" if "BLE_DFU_APP_SUPPORT" in cpp_defines else "")
 
     env.Append(
         CPPPATH=[
             join(FRAMEWORK_DIR, "cores", board.get("build.core"),
-                 "SDK", "components", "softdevice", softdevice_ver, "headers")
+                 "SDK", "components", "softdevice", softdevice_ver+dfu , "headers")
         ],
 
         CPPDEFINES=["%s" % softdevice_ver.upper()]
     )
 
     hex_path = join(FRAMEWORK_DIR, "cores", board.get("build.core"),
-                    "SDK", "components", "softdevice", softdevice_ver, "hex")
+                    "SDK", "components", "softdevice", softdevice_ver+dfu, "hex")
 
     for f in listdir(hex_path):
         if f.endswith(".hex") and f.lower().startswith(softdevice_ver):
             env.Append(SOFTDEVICEHEX=join(hex_path, f))
 
     if "SOFTDEVICEHEX" not in env:
+        print("------------------------------------------------------")
         print("Warning! Cannot find an appropriate softdevice binary!")
+        print("from: ",hex_path)
+        print("------------------------------------------------------")
 
     # Update linker script:
     ldscript_dir = join(FRAMEWORK_DIR, "cores",
                         board.get("build.core"), "SDK",
-                        "components", "softdevice", softdevice_ver,
+                        "components", "softdevice", softdevice_ver+dfu,
                         "toolchain", "armgcc")
     mcu_family = board.get("build.ldscript", "").split("_")[1]
     ldscript_path = ""
@@ -162,9 +241,11 @@ if softdevice_ver:
 
     if ldscript_path:
         env.Replace(LDSCRIPT_PATH=ldscript_path)
+        print("linker script path:",ldscript_path)
     else:
-        print("Warning! Cannot find an appropriate linker script for the "
-              "required softdevice!")
+        print("------------------------------------------------------------------------------")
+        print("Warning! Cannot find an appropriate linker script for the required softdevice!")
+        print("------------------------------------------------------------------------------")
 
 # Select crystal oscillator as the low frequency source by default
 clock_options = ("USE_LFXO", "USE_LFRC", "USE_LFSYNT")
