@@ -35,7 +35,8 @@ FRAMEWORK_DIR = platform.get_package_dir("framework-arduinonordicnrf5")
 assert isdir(FRAMEWORK_DIR)
 
 env.Append(
-    ASFLAGS=["-x", "assembler-with-cpp"],
+    ASFLAGS=[],
+    # ASFLAGS=["-x", "assembler-with-cpp"],
 
     CFLAGS=["-std=gnu11"],
 
@@ -83,7 +84,15 @@ env.Append(
         #      "SDK", "examples", "bsp"),
 
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "bsp"),
+
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "config"),
+
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "softdevice", "common", "softdevice_handler"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "softdevice", "s110", "headers"),
 
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "libraries", "crc16"),
@@ -111,6 +120,18 @@ env.Append(
              "SDK", "components", "libraries", "sensorsim"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "libraries", "button"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "fds"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "fstorage"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "experimental_section_vars"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "pwm"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "low_power_pwm"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "libraries", "twi"),
 
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "ble","common"),
@@ -121,6 +142,8 @@ env.Append(
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "ble","ble_services","ble_dfu"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_services","ble_gls"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "ble","ble_services","ble_bas"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "ble","ble_services","ble_hrs"),
@@ -128,7 +151,17 @@ env.Append(
              "SDK", "components", "ble","ble_services","ble_dis"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "ble","ble_advertising"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_error_log"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_db_discovery"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "ble","ble_racp"),
 
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "config"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "hal"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "drivers_nrf", "delay"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
@@ -147,11 +180,42 @@ env.Append(
              "SDK", "components", "drivers_nrf", "config"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "drivers_nrf", "common"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "twi_master"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "sdio"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "timer"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "ppi"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "drivers_nrf", "twi_master"),
+        # join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+        #      "SDK", "components", "drivers_nrf", "twi_master","deprecated","config"),
+
+        # join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+        #      "SDK", "components", "serialization", "common"),
+        # join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+        #      "SDK", "components", "serialization", "common","transport"),
+        # join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+        #      "SDK", "components", "serialization", "application","transport"),
+        # join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+        #      "SDK", "components", "serialization", "application","codecs","s110","serializers"),
+        # join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+        #      "SDK", "components", "serialization", "application","codecs","s110","mddleware"),
+
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "properitary_rf","gzll"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "properitary_rf","gzll","config"),
 
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "device"),
+
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "toolchain"),
+        join(FRAMEWORK_DIR, "cores", board.get("build.core"),
+             "SDK", "components", "toolchain","gcc"),
         join(FRAMEWORK_DIR, "cores", board.get("build.core"),
              "SDK", "components", "toolchain", "CMSIS", "Include"),
 
@@ -203,8 +267,8 @@ elif "NRF51_S110" in cpp_defines:
 print("checking softdevice...");
 if softdevice_ver:
 
-    dfu=""
-    # dfu=("_ble_dfu" if "BLE_DFU_APP_SUPPORT" in cpp_defines else "")
+    #dfu=""
+    dfu=("_ble_dfu" if "BLE_DFU_APP_SUPPORT" in cpp_defines else "")
 
     env.Append(
         CPPPATH=[
